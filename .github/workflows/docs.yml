@@ -30,50 +30,19 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: "18"
+                  cache: "npm"
 
-            - name: Install TypeSpec compiler
-              run: npm install -g @typespec/compiler
-
-            - name: Generate OpenAPI specs
+            - name: Install dependencies
               run: |
-                  echo "🔧 Generating OpenAPI specifications from TypeSpec..."
-
-                  # Create generated directory
-                  mkdir -p generated
-
-                  # Generate OpenAPI specs for each API
-                  for api in drivers-api teams-api tracks-api races-api seasons-api events-api results-api; do
-                    if [ -d "$api" ]; then
-                      echo "📝 Generating OpenAPI spec for $api..."
-                      if npx tsp compile "$api/main.tsp" --emit @typespec/openapi3 --output-dir generated; then
-                        echo "  ✅ $api OpenAPI spec generated"
-                      else
-                        echo "  ❌ $api OpenAPI spec generation failed"
-                        exit 1
-                      fi
-                    else
-                      echo "  ⚠️  $api directory not found"
-                    fi
-                  done
-
-                  echo "✅ OpenAPI specs generated"
-
-            - name: Generate Swagger documentation
-              run: |
-                  echo "📝 Generating Swagger documentation..."
-
-                  # Install dependencies
+                  echo "📦 Installing dependencies..."
                   npm install
+                  echo "✅ Dependencies installed"
 
-                  # Generate documentation using the script
-                  if [ -f "scripts/generate-docs.js" ]; then
-                    echo "📖 Running documentation generation script..."
-                    node scripts/generate-docs.js
-                    echo "✅ Documentation generation complete!"
-                  else
-                    echo "❌ Documentation generation script not found"
-                    exit 1
-                  fi
+            - name: Generate documentation
+              run: |
+                  echo "🔧 Generating OpenAPI specifications and documentation..."
+                  npm run build:all
+                  echo "✅ Documentation generation complete!"
 
             - name: Upload documentation artifacts
               uses: actions/upload-artifact@v4
