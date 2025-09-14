@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FormulaBlu API Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .api-card {
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        .api-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-color: #2a5298;
+        }
+        .api-card h3 {
+            margin: 0 0 10px 0;
+            color: #2a5298;
+            font-size: 1.3em;
+        }
+        .api-card p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .swagger-link {
+            display: inline-block;
+            background: #2a5298;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin: 20px 0;
+            transition: background 0.3s ease;
+        }
+        .swagger-link:hover {
+            background: #1e3c72;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e1e5e9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏎️ FormulaBlu API Documentation</h1>
+            <p>Comprehensive Formula 1 microservices API system</p>
+        </div>
+        
+        <div class="content">
+            <h2>Available APIs</h2>
+            <p>Explore our comprehensive collection of Formula 1 APIs, each designed for specific data management needs:</p>
+            
+            <div class="api-grid">
+                <a href="drivers-api/index.html" class="api-card">
+                    <h3>🏁 Drivers API</h3>
+                    <p>Driver master data and career information</p>
+                </a>
+                
+                <a href="teams-api/index.html" class="api-card">
+                    <h3>🏆 Teams API</h3>
+                    <p>Constructor information and team stats</p>
+                </a>
+                
+                <a href="tracks-api/index.html" class="api-card">
+                    <h3>🏁 Tracks API</h3>
+                    <p>Circuit information and venue details</p>
+                </a>
+                
+                <a href="races-api/index.html" class="api-card">
+                    <h3>🏎️ Races API</h3>
+                    <p>Race information and scheduling</p>
+                </a>
+                
+                <a href="seasons-api/index.html" class="api-card">
+                    <h3>📅 Seasons API</h3>
+                    <p>Championship years, rules, and regulations</p>
+                </a>
+                
+                <a href="events-api/index.html" class="api-card">
+                    <h3>📋 Events API</h3>
+                    <p>Race weekends, sessions (Practice, Qualifying, Race)</p>
+                </a>
+                
+                <a href="results-api/index.html" class="api-card">
+                    <h3>📊 Results API</h3>
+                    <p>Race results, qualifying results, lap times, points</p>
+                </a>
+            </div>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <a href="swagger-ui.html" class="swagger-link">
+                    🔧 Unified Swagger UI
+                </a>
+            </div>
+            
+            <h2>Features</h2>
+            <ul>
+                <li><strong>Type-Safe APIs</strong> - Built with TypeSpec for maximum type safety</li>
+                <li><strong>OpenAPI 3.0</strong> - Industry-standard API specifications</li>
+                <li><strong>Interactive Documentation</strong> - Test APIs directly in your browser</li>
+                <li><strong>SDK Generation</strong> - Auto-generated client libraries for multiple languages</li>
+                <li><strong>Microservices Ready</strong> - Designed for distributed systems</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>FormulaBlu OpenAPI Specifications - Type-safe, model-driven API development for Formula 1 microservices</p>
+        </div>
+    </div>
+</body>
+</html>
