@@ -1,0 +1,73 @@
+name: Build and Release
+
+on:
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+permissions:
+    contents: write
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "18"
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build and validate
+              run: |
+                  echo "🔨 Building OAS specifications..."
+                  npm run build:all
+
+                  echo "🔍 Validating generated specs..."
+                  npm install -g @apidevtools/swagger-cli
+                  for spec in generated/apis/*.yaml; do
+                    if [ -f "$spec" ]; then
+                      echo "Validating $(basename $spec)..."
+                      swagger-cli validate "$spec"
+                    fi
+                  done
+
+                  echo "✅ Build and validation completed"
+
+            - name: Commit generated files
+              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+                  git add -f generated/apis/ docs/ sdks/
+                  if ! git diff --staged --quiet; then
+                    git commit -m "Auto-generated OpenAPI specifications [skip ci]"
+                    git push
+                  fi
+
+            - name: Create Release
+              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: v${{ github.run_number }}
+                  name: OAS Specifications v${{ github.run_number }}
+                  body: |
+                      Auto-generated OpenAPI specifications from TypeSpec definitions.
+
+                      ## Generated Specifications
+                      - drivers-api.yaml
+                      - teams-api.yaml
+                      - tracks-api.yaml
+                      - races-api.yaml
+                      - seasons-api.yaml
+                      - events-api.yaml
+                      - results-api.yaml
+                  draft: false
+                  prerelease: false
