@@ -1,0 +1,359 @@
+openapi: 3.0.0
+info:
+  title: Tracks API
+  version: 1.0.0
+servers:
+- description: Development server
+  url: http://localhost:8084
+paths:
+  /api/tracks:
+    post:
+      description: Create a new track
+      operationId: createTrack
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTrackRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Track"
+          description: The request has succeeded and a new resource has been created
+            as a result.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createTrack_422_response"
+          description: Unprocessable Entity response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /api/tracks/{id}:
+    delete:
+      description: Delete track
+      operationId: deleteTrack
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: "There is no content to send for this request, but the headers\
+            \ may be useful. "
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Not Found response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-accepts:
+      - application/json
+    get:
+      description: Get track by ID
+      operationId: getTrack
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Track"
+          description: The request has succeeded.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Not Found response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-accepts:
+      - application/json
+    put:
+      description: Update track
+      operationId: updateTrack
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTrackRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Track"
+          description: The request has succeeded.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Not Found response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createTrack_422_response"
+          description: Unprocessable Entity response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    CreateTrackRequest:
+      description: Create track request
+      example:
+        country: country
+        city: city
+        name: name
+        length: 0.18008281
+      properties:
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+        country:
+          maxLength: 100
+          minLength: 2
+          type: string
+        city:
+          maxLength: 100
+          minLength: 1
+          type: string
+        length:
+          format: float
+          minimum: 0.1
+          type: number
+      required:
+      - city
+      - country
+      - length
+      - name
+      type: object
+    EntityMetadata:
+      description: Entity metadata
+      example:
+        createdAtTimestamp: 2000-01-23T04:56:07.000+00:00
+        modifiedAtTimestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        createdAtTimestamp:
+          format: date-time
+          type: string
+        modifiedAtTimestamp:
+          format: date-time
+          type: string
+      required:
+      - createdAtTimestamp
+      - modifiedAtTimestamp
+      type: object
+    Error:
+      description: Error response model
+      example:
+        code: code
+        message: message
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        timestamp:
+          format: date-time
+          type: string
+      required:
+      - code
+      - message
+      - timestamp
+      type: object
+    Track:
+      description: Formula 1 Track
+      example:
+        country: country
+        metadata:
+          createdAtTimestamp: 2000-01-23T04:56:07.000+00:00
+          modifiedAtTimestamp: 2000-01-23T04:56:07.000+00:00
+        city: city
+        name: name
+        length: 0.8008282
+        id: id
+        isActive: true
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        country:
+          type: string
+        city:
+          type: string
+        length:
+          format: float
+          type: number
+        isActive:
+          type: boolean
+        metadata:
+          $ref: "#/components/schemas/EntityMetadata"
+      required:
+      - city
+      - country
+      - id
+      - isActive
+      - length
+      - metadata
+      - name
+      type: object
+    UpdateTrackRequest:
+      description: Update track request
+      example:
+        country: country
+        city: city
+        name: name
+        length: 0.18008281
+        isActive: true
+      properties:
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+        country:
+          maxLength: 100
+          minLength: 2
+          type: string
+        city:
+          maxLength: 100
+          minLength: 1
+          type: string
+        length:
+          format: float
+          minimum: 0.1
+          type: number
+        isActive:
+          type: boolean
+      type: object
+    ValidationError:
+      description: Validation error details
+      example:
+        code: code
+        field: field
+        message: message
+        rejectedValue: rejectedValue
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        field:
+          type: string
+        rejectedValue:
+          type: string
+      required:
+      - code
+      - field
+      - message
+      type: object
+    createTrack_422_response:
+      example:
+        code: code
+        message: message
+        errors:
+        - code: code
+          field: field
+          message: message
+          rejectedValue: rejectedValue
+        - code: code
+          field: field
+          message: message
+          rejectedValue: rejectedValue
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        errors:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+        timestamp:
+          format: date-time
+          type: string
+      required:
+      - code
+      - errors
+      - message
+      - timestamp
+      type: object
+

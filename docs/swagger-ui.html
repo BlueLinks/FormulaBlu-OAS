@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FormulaBlu API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
+  <style>
+    .swagger-ui .topbar { display: none; }
+    .swagger-ui .info { margin: 20px 0; }
+    .swagger-ui .info .title { color: #667eea; }
+    .custom-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .custom-header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+    .custom-header p {
+      margin: 0.5rem 0 0 0;
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+    .api-selector {
+      margin: 20px 0;
+      text-align: center;
+    }
+    .api-selector select {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: 2px solid #667eea;
+      border-radius: 5px;
+      background: white;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="custom-header">
+    <h1><i class="fas fa-flag-checkered"></i> FormulaBlu API Documentation</h1>
+    <p>Comprehensive Formula 1 data APIs built with TypeSpec and OpenAPI 3.0</p>
+    <p><strong>Version 1.0.0</strong> | <strong>SDK Compatible</strong> | <strong>Feign Client Ready</strong></p>
+  </div>
+  
+  <div class="api-selector">
+    <select id="api-selector" onchange="switchAPI()">
+      <option value="">Select an API to view documentation</option>
+      <option value="drivers-api">Drivers API</option><option value="teams-api">Teams API</option><option value="tracks-api">Tracks API</option><option value="races-api">Races API</option><option value="seasons-api">Seasons API</option><option value="events-api">Events API</option><option value="results-api">Results API</option>
+    </select>
+  </div>
+
+  <div id="swagger-ui"></div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <script>
+    const apis = [{"name":"drivers-api","title":"Drivers API","version":"1.0.0","description":"API for managing Formula 1 drivers, their career information, and statistics","feignClientVersion":"1.0.0","color":"#007bff","icon":"fas fa-user-tie"},{"name":"teams-api","title":"Teams API","version":"1.0.0","description":"API for managing Formula 1 teams (constructors), their information, and statistics","feignClientVersion":"1.0.0","color":"#17a2b8","icon":"fas fa-users"},{"name":"tracks-api","title":"Tracks API","version":"1.0.0","description":"API for managing Formula 1 tracks (circuits), their information, and statistics","feignClientVersion":"1.0.0","color":"#ffc107","icon":"fas fa-route"},{"name":"races-api","title":"Races API","version":"1.0.0","description":"API for managing Formula 1 races, their information, and statistics","feignClientVersion":"1.0.0","color":"#dc3545","icon":"fas fa-flag-checkered"},{"name":"seasons-api","title":"Seasons API","version":"1.0.0","description":"API for managing Formula 1 seasons, their information, and statistics","feignClientVersion":"1.0.0","color":"#28a745","icon":"fas fa-trophy"},{"name":"events-api","title":"Events API","version":"1.0.0","description":"API for managing Formula 1 events (race weekends) and sessions","feignClientVersion":"1.0.0","color":"#6c757d","icon":"fas fa-calendar-alt"},{"name":"results-api","title":"Results API","version":"1.0.0","description":"API for managing Formula 1 results, lap times, and championship standings","feignClientVersion":"1.0.0","color":"#343a40","icon":"fas fa-chart-line"}];
+    
+    function switchAPI() {
+      const selector = document.getElementById('api-selector');
+      const selectedAPI = selector.value;
+      
+      if (selectedAPI) {
+        const api = apis.find(a => a.name === selectedAPI);
+        if (api) {
+          SwaggerUIBundle({
+            url: `./${selectedAPI}.yaml`,
+            dom_id: '#swagger-ui',
+            presets: [
+              SwaggerUIBundle.presets.apis,
+              SwaggerUIStandalonePreset
+            ],
+            layout: "StandaloneLayout",
+            deepLinking: true,
+            showExtensions: true,
+            showCommonExtensions: true,
+            docExpansion: "list",
+            filter: true,
+            tryItOutEnabled: true
+          });
+        }
+      }
+    }
+    
+    // Initialize with first API
+    if (apis.length > 0) {
+      document.getElementById('api-selector').value = apis[0].name;
+      switchAPI();
+    }
+  </script>
+</body>
+</html>
