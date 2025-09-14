@@ -7,7 +7,7 @@ API for managing Formula 1 events (race weekends) and sessions
 - **API Version**: 1.0.0
 - **SDK Version**: 1.0.0
 - **Feign Client Version**: 1.0.0
-- **Generated**: 2025-09-14T20:23:49.233Z
+- **Generated**: 2025-09-14T20:27:31.951Z
 
 ## Installation
 

@@ -7,7 +7,7 @@ API for managing Formula 1 seasons, their information, and statistics
 - **API Version**: 1.0.0
 - **SDK Version**: 1.0.0
 - **Feign Client Version**: 1.0.0
-- **Generated**: 2025-09-14T20:23:46.655Z
+- **Generated**: 2025-09-14T20:27:29.265Z
 
 ## Installation
 

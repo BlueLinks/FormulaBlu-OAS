@@ -1,6 +1,5 @@
 .github/workflows/maven.yml
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 api/openapi.yaml
@@ -38,11 +37,3 @@ src/main/java/com/formulablu/api/model/Error.java
 src/main/java/com/formulablu/api/model/Season.java
 src/main/java/com/formulablu/api/model/UpdateSeasonRequest.java
 src/main/java/com/formulablu/api/model/ValidationError.java
-src/test/java/com/formulablu/api/api/DefaultApiTest.java
-src/test/java/com/formulablu/api/model/CreateSeason422ResponseTest.java
-src/test/java/com/formulablu/api/model/CreateSeasonRequestTest.java
-src/test/java/com/formulablu/api/model/EntityMetadataTest.java
-src/test/java/com/formulablu/api/model/ErrorTest.java
-src/test/java/com/formulablu/api/model/SeasonTest.java
-src/test/java/com/formulablu/api/model/UpdateSeasonRequestTest.java
-src/test/java/com/formulablu/api/model/ValidationErrorTest.java

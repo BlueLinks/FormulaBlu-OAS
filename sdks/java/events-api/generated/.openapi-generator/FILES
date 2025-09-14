@@ -1,6 +1,5 @@
 .github/workflows/maven.yml
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 api/openapi.yaml
@@ -38,11 +37,3 @@ src/main/java/com/formulablu/api/model/Error.java
 src/main/java/com/formulablu/api/model/Event.java
 src/main/java/com/formulablu/api/model/UpdateEventRequest.java
 src/main/java/com/formulablu/api/model/ValidationError.java
-src/test/java/com/formulablu/api/api/DefaultApiTest.java
-src/test/java/com/formulablu/api/model/CreateEvent422ResponseTest.java
-src/test/java/com/formulablu/api/model/CreateEventRequestTest.java
-src/test/java/com/formulablu/api/model/EntityMetadataTest.java
-src/test/java/com/formulablu/api/model/ErrorTest.java
-src/test/java/com/formulablu/api/model/EventTest.java
-src/test/java/com/formulablu/api/model/UpdateEventRequestTest.java
-src/test/java/com/formulablu/api/model/ValidationErrorTest.java
