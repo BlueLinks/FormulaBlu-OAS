@@ -7,7 +7,7 @@ API for managing Formula 1 teams (constructors), their information, and statisti
 - **API Version**: 1.0.0
 - **SDK Version**: 1.0.0
 - **Feign Client Version**: 1.0.0
-- **Generated**: 2025-09-14T20:27:21.182Z
+- **Generated**: 2025-09-14T20:32:48.195Z
 
 ## Installation
 

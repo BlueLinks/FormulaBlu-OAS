@@ -7,7 +7,7 @@ API for managing Formula 1 races, their information, and statistics
 - **API Version**: 1.0.0
 - **SDK Version**: 1.0.0
 - **Feign Client Version**: 1.0.0
-- **Generated**: 2025-09-14T20:27:26.618Z
+- **Generated**: 2025-09-14T20:32:53.997Z
 
 ## Installation
 
