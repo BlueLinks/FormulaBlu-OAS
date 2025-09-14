@@ -49,12 +49,9 @@ swagger-codegen/
 codegen/
 
 # Generated documentation (allow docs to be committed for GitHub Pages)
-docs/
-!docs/*.html
-!docs/*.yaml
-!docs/*/
-!docs/*/*.html
-!docs/*/*.yaml
+# docs/ - commented out to allow docs directory
+!docs/
+!docs/**
 docs-generated/
 api-docs-generated/
 swagger-ui-generated/
