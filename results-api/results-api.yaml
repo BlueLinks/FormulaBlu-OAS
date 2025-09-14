@@ -1,0 +1,319 @@
+openapi: 3.0.0
+info:
+  title: Results API
+  version: 1.0.0
+tags: []
+paths:
+  /api/results:
+    post:
+      operationId: createResult
+      description: Create a new result
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Entity response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                  - errors
+                  - timestamp
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ValidationError'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateResultRequest'
+  /api/results/{id}:
+    get:
+      operationId: getResult
+      description: Get result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      operationId: updateResult
+      description: Update result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Entity response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                  - errors
+                  - timestamp
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ValidationError'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateResultRequest'
+    delete:
+      operationId: deleteResult
+      description: Delete result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    CreateResultRequest:
+      type: object
+      description: Create result request
+      required:
+        - raceId
+        - driverId
+        - teamId
+        - position
+        - points
+        - status
+      properties:
+        raceId:
+          type: string
+        driverId:
+          type: string
+        teamId:
+          type: string
+        position:
+          type: integer
+          format: int32
+          minimum: 1
+        points:
+          type: number
+          format: float
+          minimum: 0
+        status:
+          type: string
+          minLength: 1
+          maxLength: 50
+    EntityMetadata:
+      type: object
+      description: Entity metadata
+      required:
+        - createdAtTimestamp
+        - modifiedAtTimestamp
+      properties:
+        createdAtTimestamp:
+          type: string
+          format: date-time
+        modifiedAtTimestamp:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      description: Error response model
+      required:
+        - code
+        - message
+        - timestamp
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    Result:
+      type: object
+      description: Formula 1 Race Result
+      required:
+        - id
+        - raceId
+        - driverId
+        - teamId
+        - position
+        - points
+        - status
+        - metadata
+      properties:
+        id:
+          type: string
+        raceId:
+          type: string
+        driverId:
+          type: string
+        teamId:
+          type: string
+        position:
+          type: integer
+          format: int32
+        points:
+          type: number
+          format: float
+        status:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/EntityMetadata'
+    UpdateResultRequest:
+      type: object
+      description: Update result request
+      properties:
+        raceId:
+          type: string
+        driverId:
+          type: string
+        teamId:
+          type: string
+        position:
+          type: integer
+          format: int32
+          minimum: 1
+        points:
+          type: number
+          format: float
+          minimum: 0
+        status:
+          type: string
+          minLength: 1
+          maxLength: 50
+    ValidationError:
+      type: object
+      description: Validation error details
+      required:
+        - code
+        - message
+        - field
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        field:
+          type: string
+        rejectedValue:
+          type: string
+servers:
+  - url: http://localhost:8088
+    description: Development server
+    variables: {}

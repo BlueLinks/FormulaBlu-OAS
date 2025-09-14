@@ -1,0 +1,311 @@
+openapi: 3.0.0
+info:
+  title: Seasons API
+  version: 1.0.0
+tags: []
+paths:
+  /api/seasons:
+    post:
+      operationId: createSeason
+      description: Create a new season
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Entity response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                  - errors
+                  - timestamp
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ValidationError'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSeasonRequest'
+  /api/seasons/{id}:
+    get:
+      operationId: getSeason
+      description: Get season by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      operationId: updateSeason
+      description: Update season
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Entity response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                  - errors
+                  - timestamp
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ValidationError'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSeasonRequest'
+    delete:
+      operationId: deleteSeason
+      description: Delete season
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    CreateSeasonRequest:
+      type: object
+      description: Create season request
+      required:
+        - year
+        - name
+        - startDate
+        - endDate
+      properties:
+        year:
+          type: integer
+          format: int32
+          minimum: 1950
+          maximum: 2030
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+    EntityMetadata:
+      type: object
+      description: Entity metadata
+      required:
+        - createdAtTimestamp
+        - modifiedAtTimestamp
+      properties:
+        createdAtTimestamp:
+          type: string
+          format: date-time
+        modifiedAtTimestamp:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      description: Error response model
+      required:
+        - code
+        - message
+        - timestamp
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    Season:
+      type: object
+      description: Formula 1 Season
+      required:
+        - id
+        - year
+        - name
+        - startDate
+        - endDate
+        - isActive
+        - metadata
+      properties:
+        id:
+          type: string
+        year:
+          type: integer
+          format: int32
+        name:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        isActive:
+          type: boolean
+        metadata:
+          $ref: '#/components/schemas/EntityMetadata'
+    UpdateSeasonRequest:
+      type: object
+      description: Update season request
+      properties:
+        year:
+          type: integer
+          format: int32
+          minimum: 1950
+          maximum: 2030
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        isActive:
+          type: boolean
+    ValidationError:
+      type: object
+      description: Validation error details
+      required:
+        - code
+        - message
+        - field
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        field:
+          type: string
+        rejectedValue:
+          type: string
+servers:
+  - url: http://localhost:8086
+    description: Development server
+    variables: {}
