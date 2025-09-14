@@ -1,0 +1,301 @@
+openapi: 3.0.0
+info:
+  title: Races API
+  version: 1.0.0
+tags: []
+paths:
+  /api/races:
+    post:
+      operationId: createRace
+      description: Create a new race
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Race'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Entity response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                  - errors
+                  - timestamp
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ValidationError'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRaceRequest'
+  /api/races/{id}:
+    get:
+      operationId: getRace
+      description: Get race by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Race'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      operationId: updateRace
+      description: Update race
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Race'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Entity response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                  - errors
+                  - timestamp
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ValidationError'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRaceRequest'
+    delete:
+      operationId: deleteRace
+      description: Delete race
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    CreateRaceRequest:
+      type: object
+      description: Create race request
+      required:
+        - name
+        - seasonId
+        - trackId
+        - raceDate
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        seasonId:
+          type: string
+        trackId:
+          type: string
+        raceDate:
+          type: string
+          format: date-time
+    EntityMetadata:
+      type: object
+      description: Entity metadata
+      required:
+        - createdAtTimestamp
+        - modifiedAtTimestamp
+      properties:
+        createdAtTimestamp:
+          type: string
+          format: date-time
+        modifiedAtTimestamp:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      description: Error response model
+      required:
+        - code
+        - message
+        - timestamp
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    Race:
+      type: object
+      description: Formula 1 Race
+      required:
+        - id
+        - name
+        - seasonId
+        - trackId
+        - raceDate
+        - isCompleted
+        - metadata
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        seasonId:
+          type: string
+        trackId:
+          type: string
+        raceDate:
+          type: string
+          format: date-time
+        isCompleted:
+          type: boolean
+        metadata:
+          $ref: '#/components/schemas/EntityMetadata'
+    UpdateRaceRequest:
+      type: object
+      description: Update race request
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        seasonId:
+          type: string
+        trackId:
+          type: string
+        raceDate:
+          type: string
+          format: date-time
+        isCompleted:
+          type: boolean
+    ValidationError:
+      type: object
+      description: Validation error details
+      required:
+        - code
+        - message
+        - field
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        field:
+          type: string
+        rejectedValue:
+          type: string
+servers:
+  - url: http://localhost:8085
+    description: Development server
+    variables: {}
