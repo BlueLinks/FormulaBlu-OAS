@@ -1,0 +1,371 @@
+openapi: 3.0.0
+info:
+  title: Results API
+  version: 1.0.0
+servers:
+- description: Development server
+  url: http://localhost:8088
+paths:
+  /api/results:
+    post:
+      description: Create a new result
+      operationId: createResult
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateResultRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Result"
+          description: The request has succeeded and a new resource has been created
+            as a result.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createResult_422_response"
+          description: Unprocessable Entity response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /api/results/{id}:
+    delete:
+      description: Delete result
+      operationId: deleteResult
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: "There is no content to send for this request, but the headers\
+            \ may be useful. "
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Not Found response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-accepts:
+      - application/json
+    get:
+      description: Get result by ID
+      operationId: getResult
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Result"
+          description: The request has succeeded.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Not Found response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-accepts:
+      - application/json
+    put:
+      description: Update result
+      operationId: updateResult
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateResultRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Result"
+          description: The request has succeeded.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Not Found response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createResult_422_response"
+          description: Unprocessable Entity response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    CreateResultRequest:
+      description: Create result request
+      example:
+        raceId: raceId
+        driverId: driverId
+        teamId: teamId
+        position: 1
+        points: 0.6027456
+        status: status
+      properties:
+        raceId:
+          type: string
+        driverId:
+          type: string
+        teamId:
+          type: string
+        position:
+          format: int32
+          minimum: 1
+          type: integer
+        points:
+          format: float
+          minimum: 0
+          type: number
+        status:
+          maxLength: 50
+          minLength: 1
+          type: string
+      required:
+      - driverId
+      - points
+      - position
+      - raceId
+      - status
+      - teamId
+      type: object
+    EntityMetadata:
+      description: Entity metadata
+      example:
+        createdAtTimestamp: 2000-01-23T04:56:07.000+00:00
+        modifiedAtTimestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        createdAtTimestamp:
+          format: date-time
+          type: string
+        modifiedAtTimestamp:
+          format: date-time
+          type: string
+      required:
+      - createdAtTimestamp
+      - modifiedAtTimestamp
+      type: object
+    Error:
+      description: Error response model
+      example:
+        code: code
+        message: message
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        timestamp:
+          format: date-time
+          type: string
+      required:
+      - code
+      - message
+      - timestamp
+      type: object
+    Result:
+      description: Formula 1 Race Result
+      example:
+        raceId: raceId
+        metadata:
+          createdAtTimestamp: 2000-01-23T04:56:07.000+00:00
+          modifiedAtTimestamp: 2000-01-23T04:56:07.000+00:00
+        driverId: driverId
+        teamId: teamId
+        id: id
+        position: 0
+        points: 6.0274563
+        status: status
+      properties:
+        id:
+          type: string
+        raceId:
+          type: string
+        driverId:
+          type: string
+        teamId:
+          type: string
+        position:
+          format: int32
+          type: integer
+        points:
+          format: float
+          type: number
+        status:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/EntityMetadata"
+      required:
+      - driverId
+      - id
+      - metadata
+      - points
+      - position
+      - raceId
+      - status
+      - teamId
+      type: object
+    UpdateResultRequest:
+      description: Update result request
+      example:
+        raceId: raceId
+        driverId: driverId
+        teamId: teamId
+        position: 1
+        points: 0.6027456
+        status: status
+      properties:
+        raceId:
+          type: string
+        driverId:
+          type: string
+        teamId:
+          type: string
+        position:
+          format: int32
+          minimum: 1
+          type: integer
+        points:
+          format: float
+          minimum: 0
+          type: number
+        status:
+          maxLength: 50
+          minLength: 1
+          type: string
+      type: object
+    ValidationError:
+      description: Validation error details
+      example:
+        code: code
+        field: field
+        message: message
+        rejectedValue: rejectedValue
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        field:
+          type: string
+        rejectedValue:
+          type: string
+      required:
+      - code
+      - field
+      - message
+      type: object
+    createResult_422_response:
+      example:
+        code: code
+        message: message
+        errors:
+        - code: code
+          field: field
+          message: message
+          rejectedValue: rejectedValue
+        - code: code
+          field: field
+          message: message
+          rejectedValue: rejectedValue
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        errors:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+        timestamp:
+          format: date-time
+          type: string
+      required:
+      - code
+      - errors
+      - message
+      - timestamp
+      type: object
+

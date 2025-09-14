@@ -1,0 +1,313 @@
+openapi: 3.0.0
+info:
+  title: Events API
+  version: 1.0.0
+tags: []
+paths:
+  /api/events:
+    post:
+      operationId: createEvent
+      description: Create a new event
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Entity response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                  - errors
+                  - timestamp
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ValidationError'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventRequest'
+  /api/events/{id}:
+    get:
+      operationId: getEvent
+      description: Get event by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      operationId: updateEvent
+      description: Update event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Entity response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                  - errors
+                  - timestamp
+                properties:
+                  code:
+                    type: string
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ValidationError'
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEventRequest'
+    delete:
+      operationId: deleteEvent
+      description: Delete event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: Bad Request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    CreateEventRequest:
+      type: object
+      description: Create event request
+      required:
+        - name
+        - seasonId
+        - trackId
+        - eventDate
+        - eventType
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        seasonId:
+          type: string
+        trackId:
+          type: string
+        eventDate:
+          type: string
+          format: date-time
+        eventType:
+          type: string
+          minLength: 1
+          maxLength: 50
+    EntityMetadata:
+      type: object
+      description: Entity metadata
+      required:
+        - createdAtTimestamp
+        - modifiedAtTimestamp
+      properties:
+        createdAtTimestamp:
+          type: string
+          format: date-time
+        modifiedAtTimestamp:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      description: Error response model
+      required:
+        - code
+        - message
+        - timestamp
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    Event:
+      type: object
+      description: Formula 1 Event
+      required:
+        - id
+        - name
+        - seasonId
+        - trackId
+        - eventDate
+        - eventType
+        - isCompleted
+        - metadata
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        seasonId:
+          type: string
+        trackId:
+          type: string
+        eventDate:
+          type: string
+          format: date-time
+        eventType:
+          type: string
+        isCompleted:
+          type: boolean
+        metadata:
+          $ref: '#/components/schemas/EntityMetadata'
+    UpdateEventRequest:
+      type: object
+      description: Update event request
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        seasonId:
+          type: string
+        trackId:
+          type: string
+        eventDate:
+          type: string
+          format: date-time
+        eventType:
+          type: string
+          minLength: 1
+          maxLength: 50
+        isCompleted:
+          type: boolean
+    ValidationError:
+      type: object
+      description: Validation error details
+      required:
+        - code
+        - message
+        - field
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        field:
+          type: string
+        rejectedValue:
+          type: string
+servers:
+  - url: http://localhost:8087
+    description: Development server
+    variables: {}

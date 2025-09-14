@@ -1,0 +1,364 @@
+openapi: 3.0.0
+info:
+  title: Events API
+  version: 1.0.0
+servers:
+- description: Development server
+  url: http://localhost:8087
+paths:
+  /api/events:
+    post:
+      description: Create a new event
+      operationId: createEvent
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEventRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+          description: The request has succeeded and a new resource has been created
+            as a result.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createEvent_422_response"
+          description: Unprocessable Entity response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /api/events/{id}:
+    delete:
+      description: Delete event
+      operationId: deleteEvent
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: "There is no content to send for this request, but the headers\
+            \ may be useful. "
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Not Found response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-accepts:
+      - application/json
+    get:
+      description: Get event by ID
+      operationId: getEvent
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+          description: The request has succeeded.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Not Found response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-accepts:
+      - application/json
+    put:
+      description: Update event
+      operationId: updateEvent
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEventRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+          description: The request has succeeded.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad Request response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Not Found response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createEvent_422_response"
+          description: Unprocessable Entity response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal Server Error response
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    CreateEventRequest:
+      description: Create event request
+      example:
+        seasonId: seasonId
+        trackId: trackId
+        name: name
+        eventType: eventType
+        eventDate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+        seasonId:
+          type: string
+        trackId:
+          type: string
+        eventDate:
+          format: date-time
+          type: string
+        eventType:
+          maxLength: 50
+          minLength: 1
+          type: string
+      required:
+      - eventDate
+      - eventType
+      - name
+      - seasonId
+      - trackId
+      type: object
+    EntityMetadata:
+      description: Entity metadata
+      example:
+        createdAtTimestamp: 2000-01-23T04:56:07.000+00:00
+        modifiedAtTimestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        createdAtTimestamp:
+          format: date-time
+          type: string
+        modifiedAtTimestamp:
+          format: date-time
+          type: string
+      required:
+      - createdAtTimestamp
+      - modifiedAtTimestamp
+      type: object
+    Error:
+      description: Error response model
+      example:
+        code: code
+        message: message
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        timestamp:
+          format: date-time
+          type: string
+      required:
+      - code
+      - message
+      - timestamp
+      type: object
+    Event:
+      description: Formula 1 Event
+      example:
+        metadata:
+          createdAtTimestamp: 2000-01-23T04:56:07.000+00:00
+          modifiedAtTimestamp: 2000-01-23T04:56:07.000+00:00
+        seasonId: seasonId
+        trackId: trackId
+        name: name
+        id: id
+        eventType: eventType
+        eventDate: 2000-01-23T04:56:07.000+00:00
+        isCompleted: true
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        seasonId:
+          type: string
+        trackId:
+          type: string
+        eventDate:
+          format: date-time
+          type: string
+        eventType:
+          type: string
+        isCompleted:
+          type: boolean
+        metadata:
+          $ref: "#/components/schemas/EntityMetadata"
+      required:
+      - eventDate
+      - eventType
+      - id
+      - isCompleted
+      - metadata
+      - name
+      - seasonId
+      - trackId
+      type: object
+    UpdateEventRequest:
+      description: Update event request
+      example:
+        seasonId: seasonId
+        trackId: trackId
+        name: name
+        eventType: eventType
+        eventDate: 2000-01-23T04:56:07.000+00:00
+        isCompleted: true
+      properties:
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+        seasonId:
+          type: string
+        trackId:
+          type: string
+        eventDate:
+          format: date-time
+          type: string
+        eventType:
+          maxLength: 50
+          minLength: 1
+          type: string
+        isCompleted:
+          type: boolean
+      type: object
+    ValidationError:
+      description: Validation error details
+      example:
+        code: code
+        field: field
+        message: message
+        rejectedValue: rejectedValue
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        field:
+          type: string
+        rejectedValue:
+          type: string
+      required:
+      - code
+      - field
+      - message
+      type: object
+    createEvent_422_response:
+      example:
+        code: code
+        message: message
+        errors:
+        - code: code
+          field: field
+          message: message
+          rejectedValue: rejectedValue
+        - code: code
+          field: field
+          message: message
+          rejectedValue: rejectedValue
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        errors:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+        timestamp:
+          format: date-time
+          type: string
+      required:
+      - code
+      - errors
+      - message
+      - timestamp
+      type: object
+
