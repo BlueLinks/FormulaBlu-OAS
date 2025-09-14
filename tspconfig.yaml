@@ -1,4 +1,4 @@
 emit:
     - "@typespec/openapi3"
     - "@typespec/json-schema"
-output-dir: "./generated"
+output-dir: "{project-root}/generated"

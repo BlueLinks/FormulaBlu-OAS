@@ -84,14 +84,17 @@ jobs:
               run: |
                   echo "🔍 Validating OpenAPI specifications..."
 
-                  # Basic validation - check if files exist and are valid YAML
+                  # Install swagger-cli for proper OpenAPI validation
+                  npm install -g @apidevtools/swagger-cli
+
+                  # Validate all generated specs
                   for api in drivers-api teams-api tracks-api races-api seasons-api events-api results-api; do
                     if [ -f "generated/apis/$api.yaml" ]; then
                       echo "📝 Validating $api.yaml..."
-                      if python3 -c "import yaml; yaml.safe_load(open('generated/apis/$api.yaml'))" 2>/dev/null; then
-                        echo "  ✅ $api.yaml is valid YAML"
+                      if swagger-cli validate "generated/apis/$api.yaml"; then
+                        echo "  ✅ $api.yaml is valid OpenAPI specification"
                       else
-                        echo "  ❌ $api.yaml is invalid YAML"
+                        echo "  ❌ $api.yaml is invalid OpenAPI specification"
                         exit 1
                       fi
                     else

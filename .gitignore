@@ -40,21 +40,30 @@ certificates/
 # ===========================================
 # GENERATED FILES & BUILD ARTIFACTS
 # ===========================================
-# OpenAPI generated files
+# OpenAPI generated files (allow specific generated specs to be committed)
 generated/
+!generated/apis/
+!generated/apis/*.yaml
 openapi-generator/
 swagger-codegen/
 codegen/
 
-# Generated documentation
+# Generated documentation (allow docs to be committed for GitHub Pages)
 docs/
+!docs/*.html
+!docs/*.yaml
+!docs/*/
+!docs/*/*.html
+!docs/*/*.yaml
 docs-generated/
 api-docs-generated/
 swagger-ui-generated/
 
-# Generated clients
+# Generated clients (allow SDKs to be committed)
 clients/
 sdks/
+!sdks/docs/
+!sdks/java/
 client-sdks/
 
 # Generated servers
