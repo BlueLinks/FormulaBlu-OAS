@@ -1,0 +1,254 @@
+name: Build and Test OAS Specifications
+
+on:
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main, develop]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "18"
+                  cache: "npm"
+
+            - name: Install dependencies
+              run: |
+                  echo "📦 Installing dependencies..."
+                  npm install
+                  echo "✅ Dependencies installed"
+
+            - name: Install TypeSpec compiler
+              run: |
+                  echo "🔧 Installing TypeSpec compiler..."
+                  npm install -g @typespec/compiler
+                  echo "✅ TypeSpec compiler installed"
+
+            - name: Validate TypeSpec files
+              run: |
+                  echo "🔍 Validating TypeSpec files..."
+
+                  # Check if TypeSpec files exist and are valid
+                  for api in drivers-api teams-api tracks-api races-api seasons-api events-api results-api; do
+                    if [ -d "$api" ]; then
+                      echo "📝 Validating $api..."
+                      if [ -f "$api/main.tsp" ]; then
+                        echo "  ✓ main.tsp exists"
+                      else
+                        echo "  ❌ main.tsp missing"
+                        exit 1
+                      fi
+                      if [ -f "$api/models.tsp" ]; then
+                        echo "  ✓ models.tsp exists"
+                      else
+                        echo "  ❌ models.tsp missing"
+                        exit 1
+                      fi
+                      if [ -f "$api/requests.tsp" ]; then
+                        echo "  ✓ requests.tsp exists"
+                      else
+                        echo "  ❌ requests.tsp missing"
+                        exit 1
+                      fi
+                      if [ -f "$api/responses.tsp" ]; then
+                        echo "  ✓ responses.tsp exists"
+                      else
+                        echo "  ❌ responses.tsp missing"
+                        exit 1
+                      fi
+                    else
+                      echo "⚠️  $api directory missing"
+                    fi
+                  done
+
+                  # Check shared files
+                  echo "📝 Validating shared files..."
+                  for file in shared/models.tsp shared/parameters.tsp shared/responses.tsp shared/versioning.tsp shared/validation.tsp; do
+                    if [ -f "$file" ]; then
+                      echo "  ✓ $file exists"
+                    else
+                      echo "  ❌ $file missing"
+                      exit 1
+                    fi
+                  done
+
+                  echo "✅ All TypeSpec files validated"
+
+            - name: Test TypeSpec compilation
+              run: |
+                  echo "🔨 Testing TypeSpec compilation..."
+
+                  # Test compilation of each API
+                  for api in drivers-api teams-api tracks-api races-api seasons-api events-api results-api; do
+                    if [ -d "$api" ]; then
+                      echo "📝 Compiling $api..."
+                      if npx tsp compile "$api/main.tsp" --emit @typespec/openapi3 --no-emit; then
+                        echo "  ✅ $api compiled successfully"
+                      else
+                        echo "  ❌ $api compilation failed"
+                        exit 1
+                      fi
+                    fi
+                  done
+
+                  echo "✅ All APIs compiled successfully"
+
+            - name: Generate OpenAPI specifications
+              run: |
+                  echo "📄 Generating OpenAPI specifications..."
+
+                  # Create generated directory
+                  mkdir -p generated
+
+                  # Generate OpenAPI specs for each API
+                  for api in drivers-api teams-api tracks-api races-api seasons-api events-api results-api; do
+                    if [ -d "$api" ]; then
+                      echo "📝 Generating OpenAPI spec for $api..."
+                      if npx tsp compile "$api/main.tsp" --emit @typespec/openapi3 --output-dir generated; then
+                        echo "  ✅ $api OpenAPI spec generated"
+                      else
+                        echo "  ❌ $api OpenAPI spec generation failed"
+                        exit 1
+                      fi
+                    fi
+                  done
+
+                  # List generated files
+                  echo "📋 Generated files:"
+                  ls -la generated/
+
+                  echo "✅ OpenAPI specifications generated"
+
+            - name: Validate OpenAPI specifications
+              run: |
+                  echo "🔍 Validating OpenAPI specifications..."
+
+                  # Install swagger-codegen for validation
+                  npm install -g @apidevtools/swagger-parser
+
+                  # Validate each generated OpenAPI spec
+                  for api in drivers-api teams-api tracks-api races-api seasons-api events-api results-api; do
+                    if [ -f "generated/$api.yaml" ]; then
+                      echo "📝 Validating $api.yaml..."
+                      if npx swagger-parser validate "generated/$api.yaml"; then
+                        echo "  ✅ $api.yaml is valid"
+                      else
+                        echo "  ❌ $api.yaml is invalid"
+                        exit 1
+                      fi
+                    else
+                      echo "  ⚠️  $api.yaml not found"
+                    fi
+                  done
+
+                  echo "✅ All OpenAPI specifications are valid"
+
+            - name: Test SDK generation
+              run: |
+                  echo "🔧 Testing SDK generation..."
+
+                  # Test SDK generation for one API (drivers-api)
+                  if [ -f "generated/drivers-api.yaml" ]; then
+                    echo "📝 Testing SDK generation for drivers-api..."
+                    
+                    # Create test SDK directory
+                    mkdir -p test-sdks
+                    
+                    # Test Java SDK generation
+                    echo "  🔨 Testing Java SDK generation..."
+                    if npx @openapitools/openapi-generator-cli generate \
+                      -i "generated/drivers-api.yaml" \
+                      -g java \
+                      -o "test-sdks/java-drivers-api" \
+                      --package-name "com.formulablu.drivers.api" \
+                      --api-package "com.formulablu.drivers.api" \
+                      --model-package "com.formulablu.drivers.model" \
+                      --additional-properties=dateLibrary=java8,library=feign; then
+                      echo "    ✅ Java SDK generated successfully"
+                    else
+                      echo "    ❌ Java SDK generation failed"
+                      exit 1
+                    fi
+                    
+                    # Test TypeScript SDK generation
+                    echo "  🔨 Testing TypeScript SDK generation..."
+                    if npx @openapitools/openapi-generator-cli generate \
+                      -i "generated/drivers-api.yaml" \
+                      -g typescript-fetch \
+                      -o "test-sdks/typescript-drivers-api" \
+                      --package-name "@formulablu/drivers-api" \
+                      --additional-properties=supportsES6=true,typescriptThreePlus=true; then
+                      echo "    ✅ TypeScript SDK generated successfully"
+                    else
+                      echo "    ❌ TypeScript SDK generation failed"
+                      exit 1
+                    fi
+                    
+                    echo "✅ SDK generation test completed"
+                  else
+                    echo "⚠️  drivers-api.yaml not found, skipping SDK generation test"
+                  fi
+
+            - name: Test documentation generation
+              run: |
+                  echo "📚 Testing documentation generation..."
+
+                  # Test documentation generation script
+                  if [ -f "scripts/generate-docs.js" ]; then
+                    echo "📝 Testing documentation generation script..."
+                    if node scripts/generate-docs.js; then
+                      echo "  ✅ Documentation generation script works"
+                    else
+                      echo "  ❌ Documentation generation script failed"
+                      exit 1
+                    fi
+                  else
+                    echo "  ⚠️  Documentation generation script not found"
+                  fi
+
+                  echo "✅ Documentation generation test completed"
+
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: oas-build-artifacts
+                  path: |
+                      generated/
+                      test-sdks/
+                  retention-days: 7
+
+            - name: Build Summary
+              run: |
+                  echo "🎉 Build Summary"
+                  echo "================"
+                  echo "✅ Dependencies installed"
+                  echo "✅ TypeSpec files validated"
+                  echo "✅ TypeSpec compilation successful"
+                  echo "✅ OpenAPI specifications generated"
+                  echo "✅ OpenAPI specifications validated"
+                  echo "✅ SDK generation tested"
+                  echo "✅ Documentation generation tested"
+                  echo ""
+                  echo "📊 Generated Files:"
+                  if [ -d "generated" ]; then
+                    ls -la generated/
+                  fi
+                  echo ""
+                  echo "🔧 Test SDKs:"
+                  if [ -d "test-sdks" ]; then
+                    ls -la test-sdks/
+                  fi

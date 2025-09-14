@@ -1,0 +1,613 @@
+# Shared Components for FormulaBlu APIs
+# This file contains common schemas, responses, and parameters used across all APIs
+
+openapi: 3.0.3
+info:
+  title: "FormulaBlu API"
+  version: "1.0.0"
+  description: "Formula 1 data APIs with comprehensive versioning and client SDK support"
+  contact:
+    name: "FormulaBlu Team"
+    email: "api@formulablu.com"
+    url: "https://formulablu.com"
+  license:
+    name: "MIT"
+    url: "https://opensource.org/licenses/MIT"
+  x-api-version: "1.0.0"
+  x-api-major-version: 1
+  x-api-status: "stable"
+  x-api-release-date: "2024-01-15"
+  x-sdk-version: "1.0.0"
+  x-feign-client-version: "1.0.0"
+  x-sdk-compatible: true
+
+servers:
+  - url: "https://api.formulablu.com"
+    description: "Production server"
+  - url: "https://staging-api.formulablu.com"
+    description: "Staging server"
+  - url: "http://localhost:8080"
+    description: "Development server"
+
+components:
+  schemas:
+    # Common Response Models
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Error code
+          example: "RESOURCE_NOT_FOUND"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "The requested resource was not found"
+        timestamp:
+          type: string
+          format: date-time
+          description: When the error occurred
+          example: "2024-01-15T10:30:00Z"
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+
+    ValidationError:
+      type: object
+      required:
+        - code
+        - message
+        - field
+      properties:
+        code:
+          type: string
+          description: Validation error code
+          example: "VALIDATION_FAILED"
+        message:
+          type: string
+          description: Validation error message
+          example: "Field 'name' is required"
+        field:
+          type: string
+          description: The field that failed validation
+          example: "name"
+        rejectedValue:
+          type: string
+          description: The value that was rejected
+          example: ""
+
+    Pagination:
+      type: object
+      required:
+        - page
+        - size
+        - totalElements
+        - totalPages
+        - first
+        - last
+        - hasNext
+        - hasPrevious
+        - numberOfElements
+        - isEmpty
+      properties:
+        page:
+          type: integer
+          minimum: 0
+          description: Current page number (0-based)
+          example: 0
+        size:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Number of elements per page
+          example: 20
+        totalElements:
+          type: integer
+          minimum: 0
+          description: Total number of elements
+          example: 150
+        totalPages:
+          type: integer
+          minimum: 0
+          description: Total number of pages
+          example: 8
+        first:
+          type: boolean
+          description: Whether this is the first page
+          example: true
+        last:
+          type: boolean
+          description: Whether this is the last page
+          example: false
+        hasNext:
+          type: boolean
+          description: Whether there is a next page
+          example: true
+        hasPrevious:
+          type: boolean
+          description: Whether there is a previous page
+          example: false
+        numberOfElements:
+          type: integer
+          minimum: 0
+          description: Number of elements in current page
+          example: 20
+        isEmpty:
+          type: boolean
+          description: Whether the current page is empty
+          example: false
+        nextCursor:
+          type: string
+          description: Cursor for next page (cursor-based pagination)
+          example: "eyJpZCI6MTQzfQ=="
+        previousCursor:
+          type: string
+          description: Cursor for previous page (cursor-based pagination)
+          example: "eyJpZCI6MTAzfQ=="
+
+    CursorPagination:
+      type: object
+      required:
+        - limit
+        - hasNext
+        - hasPrevious
+        - numberOfElements
+        - isEmpty
+      properties:
+        cursor:
+          type: string
+          description: Current cursor
+          example: "eyJpZCI6MTIzfQ=="
+        nextCursor:
+          type: string
+          description: Cursor for next page
+          example: "eyJpZCI6MTQzfQ=="
+        previousCursor:
+          type: string
+          description: Cursor for previous page
+          example: "eyJpZCI6MTAzfQ=="
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Number of elements per page
+          example: 20
+        hasNext:
+          type: boolean
+          description: Whether there is a next page
+          example: true
+        hasPrevious:
+          type: boolean
+          description: Whether there is a previous page
+          example: false
+        numberOfElements:
+          type: integer
+          minimum: 0
+          description: Number of elements in current page
+          example: 20
+        isEmpty:
+          type: boolean
+          description: Whether the current page is empty
+          example: false
+        totalElements:
+          type: integer
+          minimum: 0
+          description: Total number of elements (optional, expensive operation)
+          example: 150
+
+    OffsetPagination:
+      type: object
+      required:
+        - offset
+        - limit
+        - hasNext
+        - hasPrevious
+        - numberOfElements
+        - isEmpty
+      properties:
+        offset:
+          type: integer
+          minimum: 0
+          description: Number of items skipped
+          example: 0
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Number of elements per page
+          example: 20
+        hasNext:
+          type: boolean
+          description: Whether there is a next page
+          example: true
+        hasPrevious:
+          type: boolean
+          description: Whether there is a previous page
+          example: false
+        numberOfElements:
+          type: integer
+          minimum: 0
+          description: Number of elements in current page
+          example: 20
+        isEmpty:
+          type: boolean
+          description: Whether the current page is empty
+          example: false
+        totalElements:
+          type: integer
+          minimum: 0
+          description: Total number of elements (optional, expensive operation)
+          example: 150
+
+    # Common Entity Properties
+    TimestampedEntity:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          description: When the entity was created
+          example: "2024-01-15T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the entity was last updated
+          example: "2024-01-15T10:30:00Z"
+
+    # Common Reference Models
+    Country:
+      type: object
+      required:
+        - code
+        - name
+      properties:
+        code:
+          type: string
+          minLength: 2
+          maxLength: 3
+          description: ISO country code
+          example: "GBR"
+        name:
+          type: string
+          description: Country name
+          example: "United Kingdom"
+
+    # Common Enums
+    SessionType:
+      type: string
+      enum:
+        - PRACTICE_1
+        - PRACTICE_2
+        - PRACTICE_3
+        - QUALIFYING
+        - SPRINT_QUALIFYING
+        - SPRINT
+        - RACE
+      description: Type of F1 session
+
+    WeatherCondition:
+      type: string
+      enum:
+        - SUNNY
+        - CLOUDY
+        - RAINY
+        - STORMY
+        - FOGGY
+      description: Weather condition during session
+
+    TyreCompound:
+      type: string
+      enum:
+        - HARD
+        - MEDIUM
+        - SOFT
+        - INTERMEDIATE
+        - WET
+      description: Tyre compound type
+
+    # API Versioning Models
+    ApiVersion:
+      type: object
+      required:
+        - version
+        - major
+        - status
+        - sdkCompatible
+      properties:
+        version:
+          type: string
+          description: API version number (semantic versioning)
+          example: "1.0.0"
+        major:
+          type: integer
+          description: Major version number
+          example: 1
+        minor:
+          type: integer
+          description: Minor version number
+          example: 0
+        patch:
+          type: integer
+          description: Patch version number
+          example: 0
+        releaseDate:
+          type: string
+          format: date
+          description: API release date
+          example: "2024-01-15"
+        status:
+          type: string
+          enum: ["stable", "beta", "deprecated", "sunset"]
+          description: API status
+          example: "stable"
+        sdkCompatible:
+          type: boolean
+          description: SDK generation compatibility
+          example: true
+        feignClientVersion:
+          type: string
+          description: Feign client version
+          example: "1.0.0"
+        deprecationDate:
+          type: string
+          format: date
+          description: Deprecation date (if applicable)
+          example: "2025-01-15"
+        sunsetDate:
+          type: string
+          format: date
+          description: Sunset date (if applicable)
+          example: "2026-01-15"
+
+    # Common Response Wrappers
+    ApiResponse:
+      type: object
+      required:
+        - success
+        - data
+        - version
+      properties:
+        success:
+          type: boolean
+          description: Whether the request was successful
+          example: true
+        data:
+          type: object
+          description: Response data
+        message:
+          type: string
+          description: Optional success message
+          example: "Operation completed successfully"
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: "2024-01-15T10:30:00Z"
+        version:
+          $ref: '#/components/schemas/ApiVersion'
+
+    PagedResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          required:
+            - pagination
+          properties:
+            data:
+              type: array
+              description: Array of data items
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+
+    CursorPagedResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          required:
+            - pagination
+          properties:
+            data:
+              type: array
+              description: Array of data items
+            pagination:
+              $ref: '#/components/schemas/CursorPagination'
+
+    OffsetPagedResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          required:
+            - pagination
+          properties:
+            data:
+              type: array
+              description: Array of data items
+            pagination:
+              $ref: '#/components/schemas/OffsetPagination'
+
+  responses:
+    # Common HTTP Responses
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "BAD_REQUEST"
+            message: "Invalid request parameters"
+            timestamp: "2024-01-15T10:30:00Z"
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "UNAUTHORIZED"
+            message: "Authentication required"
+            timestamp: "2024-01-15T10:30:00Z"
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "FORBIDDEN"
+            message: "Insufficient permissions"
+            timestamp: "2024-01-15T10:30:00Z"
+
+    NotFound:
+      description: Resource Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "RESOURCE_NOT_FOUND"
+            message: "The requested resource was not found"
+            timestamp: "2024-01-15T10:30:00Z"
+
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "CONFLICT"
+            message: "Resource already exists"
+            timestamp: "2024-01-15T10:30:00Z"
+
+    UnprocessableEntity:
+      description: Unprocessable Entity
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                example: "VALIDATION_FAILED"
+              message:
+                type: string
+                example: "Validation failed"
+              errors:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ValidationError'
+              timestamp:
+                type: string
+                format: date-time
+                example: "2024-01-15T10:30:00Z"
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "INTERNAL_SERVER_ERROR"
+            message: "An unexpected error occurred"
+            timestamp: "2024-01-15T10:30:00Z"
+
+  parameters:
+    # Common Query Parameters
+    PageParam:
+      name: page
+      in: query
+      description: Page number (0-based)
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+        example: 0
+
+    SizeParam:
+      name: size
+      in: query
+      description: Number of items per page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+        example: 20
+
+    SortParam:
+      name: sort
+      in: query
+      description: Sort criteria (field,direction). Multiple sorts: field1,asc;field2,desc
+      required: false
+      schema:
+        type: string
+        pattern: '^[a-zA-Z][a-zA-Z0-9]*(,(asc|desc))?(;[a-zA-Z][a-zA-Z0-9]*(,(asc|desc))?)*$'
+        example: "name,asc"
+
+    CursorParam:
+      name: cursor
+      in: query
+      description: Cursor for pagination (for cursor-based pagination)
+      required: false
+      schema:
+        type: string
+        example: "eyJpZCI6MTIzfQ=="
+
+    OffsetParam:
+      name: offset
+      in: query
+      description: Number of items to skip (for offset-based pagination)
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+        example: 0
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Maximum number of items to return (1-1000)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
+        default: 20
+        example: 20
+
+    SearchParam:
+      name: search
+      in: query
+      description: Search term
+      required: false
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 100
+        example: "hamilton"
+
+  securitySchemes:
+    # API Key Authentication
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication
+
+    # Bearer Token Authentication
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication

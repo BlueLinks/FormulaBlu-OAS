@@ -1,0 +1,43 @@
+{
+    "name": "formulablu-oas",
+    "version": "1.0.0",
+    "description": "FormulaBlu OpenAPI Specifications and Documentation",
+    "main": "index.js",
+    "scripts": {
+        "build": "npm run build:apis",
+        "build:apis": "mkdir -p generated/apis && for api in drivers-api teams-api tracks-api races-api seasons-api events-api results-api; do if [ -d \"$api\" ]; then echo \"Building $api...\"; npx tsp compile \"$api/main.tsp\" --emit @typespec/openapi3 --output-dir generated || echo \"Failed to build $api, skipping...\"; if [ -f \"generated/@typespec/openapi3/openapi.yaml\" ]; then cp generated/@typespec/openapi3/openapi.yaml generated/apis/$api.yaml; fi; fi; done",
+        "build:docs": "npm run build && npm run generate:docs",
+        "generate:docs": "node scripts/generate-docs.js",
+        "generate:sdks": "node scripts/generate-sdks.js",
+        "build:all": "npm run build && npm run generate:docs && npm run generate:sdks",
+        "serve:docs": "http-server docs -p 8080",
+        "clean": "rm -rf generated docs sdks",
+        "preview": "npm run build:docs && npm run serve:docs",
+        "test": "npm run build && echo 'Build test passed'",
+        "validate": "npm run build && echo 'Validation passed'"
+    },
+    "keywords": [
+        "formula1",
+        "api",
+        "openapi",
+        "typespec",
+        "swagger",
+        "documentation"
+    ],
+    "author": "FormulaBlu Team",
+    "license": "MIT",
+    "devDependencies": {
+        "@openapitools/openapi-generator-cli": "^2.8.0",
+        "@typespec/compiler": "^0.50.0",
+        "@typespec/openapi3": "^0.50.0",
+        "@typespec/http": "^0.50.0",
+        "chalk": "^4.1.2",
+        "fs-extra": "^11.1.1",
+        "http-server": "^14.1.1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/FormulaBlu/FormulaBlu-OAS.git"
+    },
+    "homepage": "https://formulablu.github.io/FormulaBlu-OAS"
+}

@@ -1,0 +1,116 @@
+name: Generate and Deploy Documentation
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+concurrency:
+    group: "pages"
+    cancel-in-progress: false
+
+jobs:
+    generate-docs:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "18"
+
+            - name: Install TypeSpec compiler
+              run: npm install -g @typespec/compiler
+
+            - name: Generate OpenAPI specs
+              run: |
+                  echo "🔧 Generating OpenAPI specifications from TypeSpec..."
+
+                  # Create generated directory
+                  mkdir -p generated
+
+                  # Generate OpenAPI specs for each API
+                  for api in drivers-api teams-api tracks-api races-api seasons-api events-api results-api; do
+                    if [ -d "$api" ]; then
+                      echo "📝 Generating OpenAPI spec for $api..."
+                      if npx tsp compile "$api/main.tsp" --emit @typespec/openapi3 --output-dir generated; then
+                        echo "  ✅ $api OpenAPI spec generated"
+                      else
+                        echo "  ❌ $api OpenAPI spec generation failed"
+                        exit 1
+                      fi
+                    else
+                      echo "  ⚠️  $api directory not found"
+                    fi
+                  done
+
+                  echo "✅ OpenAPI specs generated"
+
+            - name: Generate Swagger documentation
+              run: |
+                  echo "📝 Generating Swagger documentation..."
+
+                  # Install dependencies
+                  npm install
+
+                  # Generate documentation using the script
+                  if [ -f "scripts/generate-docs.js" ]; then
+                    echo "📖 Running documentation generation script..."
+                    node scripts/generate-docs.js
+                    echo "✅ Documentation generation complete!"
+                  else
+                    echo "❌ Documentation generation script not found"
+                    exit 1
+                  fi
+
+            - name: Upload documentation artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: documentation
+                  path: docs/
+
+    deploy-docs:
+        needs: generate-docs
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Download documentation artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: documentation
+                  path: docs/
+
+            - name: Setup Pages
+              uses: actions/configure-pages@v4
+
+            - name: Upload to Pages
+              uses: actions/upload-pages-artifact@v2
+              with:
+                  path: ./docs
+
+    deploy:
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        runs-on: ubuntu-latest
+        needs: deploy-docs
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v3
